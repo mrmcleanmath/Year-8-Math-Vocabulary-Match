@@ -2,968 +2,969 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Year 8 Math Vocabulary Match</title>
-  <style>
-    :root{
-      --bg:#f4f7fb;
-      --panel:#ffffff;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --line:#dbe3ee;
-      --accent:#2f67d8;
-      --accent-dark:#234fae;
-      --good:#16a34a;
-      --good-soft:#dcfce7;
-      --bad:#dc2626;
-      --bad-soft:#fee2e2;
-      --shadow:0 12px 30px rgba(31,41,55,.10);
-    }
-
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      min-height:100vh;
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(47,103,216,.08), transparent 34rem),
-        var(--bg);
-    }
-
-    button{font:inherit}
-
-    .app{
-      width:min(1180px,96vw);
-      margin:0 auto;
-      padding:24px 0 38px;
-    }
-
-    .top{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-end;
-      gap:16px;
-      margin-bottom:16px;
-    }
-
-    h1{
-      margin:0;
-      font-size:clamp(1.65rem,3vw,2.25rem);
-      line-height:1.05;
-      letter-spacing:-.03em;
-    }
-
-    .subtitle{
-      margin:7px 0 0;
-      color:var(--muted);
-      font-size:.95rem;
-    }
-
-    .section-label{
-      margin:17px 0 7px;
-      color:var(--muted);
-      font-size:.76rem;
-      font-weight:800;
-      letter-spacing:.07em;
-      text-transform:uppercase;
-    }
-
-    .chapter-row,
-    .mode-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .mode-row{margin-bottom:16px}
-
-    .chapter-btn,
-    .mode-btn,
-    .small-btn{
-      border:0;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:750;
-      transition:.16s ease;
-    }
-
-    .chapter-btn,
-    .mode-btn{
-      padding:10px 14px;
-      background:#e8eef7;
-      color:#334155;
-    }
-
-    .chapter-btn:hover,
-    .mode-btn:hover{transform:translateY(-1px)}
-
-    .chapter-btn.active,
-    .mode-btn.active{
-      color:#fff;
-      background:var(--accent);
-      box-shadow:0 7px 18px rgba(47,103,216,.22);
-    }
-
-    .small-btn{
-      padding:10px 14px;
-      background:#fff;
-      color:#334155;
-      border:1px solid var(--line);
-    }
-
-    .small-btn:hover{background:#f8fafc}
-
-    .status{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:14px;
-      color:var(--muted);
-      font-size:.9rem;
-      font-weight:650;
-    }
-
-    .progress-track{
-      height:7px;
-      border-radius:999px;
-      background:#e5eaf2;
-      overflow:hidden;
-      margin-bottom:18px;
-    }
-
-    .progress-fill{
-      height:100%;
-      width:0%;
-      background:var(--accent);
-      transition:width .25s ease;
-    }
-
-    .game-layout{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) 290px;
-      gap:18px;
-      align-items:start;
-    }
-
-    .board,
-    .answer-panel{
-      background:var(--panel);
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
-      border-radius:20px;
-    }
-
-    .board{padding:18px}
-
-    .board-heading{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:14px;
-    }
-
-    .board-heading strong{font-size:.93rem}
-
-    .board-heading span{
-      color:var(--muted);
-      font-size:.82rem;
-    }
-
-    .cards-grid{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:12px;
-    }
-
-    .card-shell{
-      perspective:900px;
-      min-width:0;
-    }
-
-    .card{
-      position:relative;
-      height:148px;
-      border-radius:16px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      padding:14px;
-      overflow:hidden;
-      transform-origin:center center;
-      color:#fff;
-      border:1px solid rgba(255,255,255,.28);
-      background:
-        linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,0)),
-        linear-gradient(145deg,#4a70cf,#2d53ae);
-      box-shadow:0 8px 18px rgba(40,78,161,.16);
-      transition:filter .18s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
-    }
-
-    .card.matched-card{
-      color:#173c2a;
-      background:
-        linear-gradient(135deg,rgba(22,163,74,.08),rgba(22,163,74,.02)),
-        #fff;
-      border:2px solid rgba(22,163,74,.32);
-      box-shadow:0 8px 18px rgba(22,163,74,.10);
-    }
-
-    .card.drop-hover:not(.matched-card){
-      outline:3px solid rgba(47,103,216,.35);
-      outline-offset:2px;
-    }
-
-    .card.correct-flash{
-      filter:drop-shadow(0 0 12px rgba(22,163,74,.58));
-    }
-
-    .card.wrong-flash{
-      animation:wrongPulse .42s ease;
-    }
-
-    @keyframes wrongPulse{
-      0%{filter:drop-shadow(0 0 0 rgba(220,38,38,0))}
-      45%{filter:drop-shadow(0 0 13px rgba(220,38,38,.75))}
-      100%{filter:drop-shadow(0 0 0 rgba(220,38,38,0))}
-    }
-
-    .lang{
-      font-size:.66rem;
-      font-weight:850;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      opacity:.78;
-      margin-bottom:7px;
-    }
-
-    .word{
-      font-size:clamp(.97rem,1.55vw,1.25rem);
-      line-height:1.12;
-      font-weight:850;
-      overflow-wrap:anywhere;
-    }
-
-    .pair-wrap{
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:7px;
-    }
-
-    .pair-line{
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .pair-word{
-      font-size:clamp(.86rem,1.35vw,1.06rem);
-      line-height:1.08;
-      font-weight:850;
-      overflow-wrap:anywhere;
-    }
-
-    .pair-divider{
-      width:48%;
-      height:1px;
-      background:rgba(22,101,52,.18);
-      margin:1px 0;
-    }
-
-    .matched-check{
-      margin-top:2px;
-      color:var(--good);
-      font-size:.7rem;
-      font-weight:850;
-    }
-
-    .answer-panel{
-      position:sticky;
-      top:16px;
-      padding:16px;
-    }
-
-    .answer-panel h2{
-      font-size:1rem;
-      margin:0 0 4px;
-    }
-
-    .answer-panel p{
-      margin:0 0 13px;
-      color:var(--muted);
-      font-size:.8rem;
-      line-height:1.35;
-    }
-
-    .word-list{
-      display:grid;
-      gap:8px;
-    }
-
-    .drag-word{
-      position:relative;
-      width:100%;
-      min-height:42px;
-      border-radius:11px;
-      border:1px solid #d8e1ee;
-      background:#f8fafc;
-      color:#253249;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      padding:8px 10px;
-      font-size:.88rem;
-      line-height:1.15;
-      font-weight:760;
-      user-select:none;
-      touch-action:none;
-      cursor:grab;
-      transition:transform .12s ease, opacity .2s ease, background .15s ease, border-color .15s ease;
-    }
-
-    .drag-word:hover{
-      background:#eef4ff;
-      border-color:#b8caec;
-      transform:translateY(-1px);
-    }
-
-    .drag-word:active{cursor:grabbing}
-    .drag-word.dragging{opacity:.18}
-
-    .drag-word.matched{
-      opacity:0;
-      pointer-events:none;
-      transform:scale(.88);
-    }
-
-    .drag-ghost{
-      position:fixed;
-      z-index:9999;
-      width:220px;
-      min-height:44px;
-      border-radius:11px;
-      border:1px solid #aebfe0;
-      background:#fff;
-      color:#253249;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      padding:8px 12px;
-      font-size:.9rem;
-      line-height:1.15;
-      font-weight:800;
-      box-shadow:0 15px 35px rgba(31,41,55,.22);
-      pointer-events:none;
-      transform:translate(-50%,-50%) scale(1.03);
-      transition:left .28s cubic-bezier(.2,.8,.2,1),
-                 top .28s cubic-bezier(.2,.8,.2,1),
-                 transform .28s ease,
-                 background .15s ease,
-                 border-color .15s ease;
-    }
-
-    .drag-ghost.good{
-      background:var(--good-soft);
-      border-color:var(--good);
-    }
-
-    .drag-ghost.bad{
-      background:var(--bad-soft);
-      border-color:var(--bad);
-    }
-
-    .completion{
-      display:none;
-      text-align:center;
-      padding:34px 16px 30px;
-    }
-
-    .completion.show{display:block}
-
-    .completion h2{
-      margin:0 0 7px;
-      font-size:1.7rem;
-    }
-
-    .completion p{
-      margin:0 0 18px;
-      color:var(--muted);
-    }
-
-    .results{
-      width:min(360px,100%);
-      margin:0 auto 22px;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    .result-box{
-      padding:14px 12px;
-      border-radius:14px;
-      background:#f7f9fc;
-      border:1px solid var(--line);
-    }
-
-    .result-value{
-      font-size:1.55rem;
-      font-weight:900;
-      line-height:1;
-      color:#26364f;
-    }
-
-    .result-label{
-      margin-top:6px;
-      color:var(--muted);
-      font-size:.76rem;
-      font-weight:750;
-    }
-
-    .result-box.wrong .result-value{color:var(--bad)}
-
-    @media (max-width:900px){
-      .game-layout{grid-template-columns:1fr}
-      .answer-panel{position:static}
-      .word-list{grid-template-columns:repeat(3,minmax(0,1fr))}
-    }
-
-    @media (max-width:680px){
-      .app{padding-top:16px}
-      .top{align-items:flex-start}
-      .cards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .word-list{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .card{height:135px}
-    }
-
-    @media (max-width:430px){
-      .cards-grid{grid-template-columns:1fr 1fr}
-      .word-list{grid-template-columns:1fr 1fr}
-      .board,.answer-panel{border-radius:16px}
-      .board{padding:12px}
-      .word{font-size:.91rem}
-      .pair-word{font-size:.78rem}
-      .drag-word{font-size:.79rem}
-    }
-
-    @media (prefers-reduced-motion:reduce){
-      *,*::before,*::after{
-        animation-duration:.01ms !important;
-        transition-duration:.01ms !important;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Year 8 Math Vocabulary Match</title>
+<style>
+:root{
+--bg:#f4f7fb;
+--panel:#ffffff;
+--text:#1f2937;
+--muted:#6b7280;
+--line:#dbe3ee;
+--accent:#2f67d8;
+--accent-dark:#234fae;
+--good:#16a34a;
+--good-soft:#dcfce7;
+--bad:#dc2626;
+--bad-soft:#fee2e2;
+--shadow:0 12px 30px rgba(31,41,55,.10);
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+min-height:100vh;
+font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+color:var(--text);
+background:
+radial-gradient(circle at top left, rgba(47,103,216,.08), transparent 34rem),
+var(--bg);
+}
+
+button{font:inherit}
+
+.app{
+width:min(1180px,96vw);
+margin:0 auto;
+padding:24px 0 38px;
+}
+
+.top{
+display:flex;
+justify-content:space-between;
+align-items:flex-end;
+gap:16px;
+margin-bottom:16px;
+}
+
+h1{
+margin:0;
+font-size:clamp(1.65rem,3vw,2.25rem);
+line-height:1.05;
+letter-spacing:-.03em;
+}
+
+.subtitle{
+margin:7px 0 0;
+color:var(--muted);
+font-size:.95rem;
+}
+
+.section-label{
+margin:17px 0 7px;
+color:var(--muted);
+font-size:.76rem;
+font-weight:800;
+letter-spacing:.07em;
+text-transform:uppercase;
+}
+
+.chapter-row,
+.mode-row{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+}
+
+.mode-row{margin-bottom:16px}
+
+.chapter-btn,
+.mode-btn,
+.small-btn{
+border:0;
+border-radius:12px;
+cursor:pointer;
+font-weight:750;
+transition:.16s ease;
+}
+
+.chapter-btn,
+.mode-btn{
+padding:10px 14px;
+background:#e8eef7;
+color:#334155;
+}
+
+.chapter-btn:hover,
+.mode-btn:hover{transform:translateY(-1px)}
+
+.chapter-btn.active,
+.mode-btn.active{
+color:#fff;
+background:var(--accent);
+box-shadow:0 7px 18px rgba(47,103,216,.22);
+}
+
+.small-btn{
+padding:10px 14px;
+background:#fff;
+color:#334155;
+border:1px solid var(--line);
+}
+
+.small-btn:hover{background:#f8fafc}
+
+.status{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:12px;
+margin-bottom:14px;
+color:var(--muted);
+font-size:.9rem;
+font-weight:650;
+}
+
+.progress-track{
+height:7px;
+border-radius:999px;
+background:#e5eaf2;
+overflow:hidden;
+margin-bottom:18px;
+}
+
+.progress-fill{
+height:100%;
+width:0%;
+background:var(--accent);
+transition:width .25s ease;
+}
+
+.game-layout{
+display:grid;
+grid-template-columns:minmax(0,1fr) 290px;
+gap:18px;
+align-items:start;
+}
+
+.board,
+.answer-panel{
+background:var(--panel);
+border:1px solid var(--line);
+box-shadow:var(--shadow);
+border-radius:20px;
+}
+
+.board{padding:18px}
+
+.board-heading{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+margin-bottom:14px;
+}
+
+.board-heading strong{font-size:.93rem}
+
+.board-heading span{
+color:var(--muted);
+font-size:.82rem;
+}
+
+.cards-grid{
+display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:12px;
+}
+
+.card-shell{
+perspective:900px;
+min-width:0;
+}
+
+.card{
+position:relative;
+height:148px;
+border-radius:16px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:14px;
+overflow:hidden;
+transform-origin:center center;
+color:#fff;
+border:1px solid rgba(255,255,255,.28);
+background:
+linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,0)),
+linear-gradient(145deg,#4a70cf,#2d53ae);
+box-shadow:0 8px 18px rgba(40,78,161,.16);
+transition:filter .18s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.card.matched-card{
+color:#173c2a;
+background:
+linear-gradient(135deg,rgba(22,163,74,.08),rgba(22,163,74,.02)),
+#fff;
+border:2px solid rgba(22,163,74,.32);
+box-shadow:0 8px 18px rgba(22,163,74,.10);
+}
+
+.card.drop-hover:not(.matched-card){
+outline:3px solid rgba(47,103,216,.35);
+outline-offset:2px;
+}
+
+.card.correct-flash{
+filter:drop-shadow(0 0 12px rgba(22,163,74,.58));
+}
+
+.card.wrong-flash{
+animation:wrongPulse .42s ease;
+}
+
+@keyframes wrongPulse{
+0%{filter:drop-shadow(0 0 0 rgba(220,38,38,0))}
+45%{filter:drop-shadow(0 0 13px rgba(220,38,38,.75))}
+100%{filter:drop-shadow(0 0 0 rgba(220,38,38,0))}
+}
+
+.lang{
+font-size:.66rem;
+font-weight:850;
+letter-spacing:.08em;
+text-transform:uppercase;
+opacity:.78;
+margin-bottom:7px;
+}
+
+.word{
+font-size:clamp(.97rem,1.55vw,1.25rem);
+line-height:1.12;
+font-weight:850;
+overflow-wrap:anywhere;
+}
+
+.pair-wrap{
+width:100%;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:7px;
+}
+
+.pair-line{
+width:100%;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+}
+
+.pair-word{
+font-size:clamp(.86rem,1.35vw,1.06rem);
+line-height:1.08;
+font-weight:850;
+overflow-wrap:anywhere;
+}
+
+.pair-divider{
+width:48%;
+height:1px;
+background:rgba(22,101,52,.18);
+margin:1px 0;
+}
+
+.matched-check{
+margin-top:2px;
+color:var(--good);
+font-size:.7rem;
+font-weight:850;
+}
+
+.answer-panel{
+position:sticky;
+top:16px;
+padding:16px;
+}
+
+.answer-panel h2{
+font-size:1rem;
+margin:0 0 4px;
+}
+
+.answer-panel p{
+margin:0 0 13px;
+color:var(--muted);
+font-size:.8rem;
+line-height:1.35;
+}
+
+.word-list{
+display:grid;
+gap:8px;
+}
+
+.drag-word{
+position:relative;
+width:100%;
+min-height:42px;
+border-radius:11px;
+border:1px solid #d8e1ee;
+background:#f8fafc;
+color:#253249;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:8px 10px;
+font-size:.88rem;
+line-height:1.15;
+font-weight:760;
+user-select:none;
+touch-action:none;
+cursor:grab;
+transition:transform .12s ease, opacity .2s ease, background .15s ease, border-color .15s ease;
+}
+
+.drag-word:hover{
+background:#eef4ff;
+border-color:#b8caec;
+transform:translateY(-1px);
+}
+
+.drag-word:active{cursor:grabbing}
+.drag-word.dragging{opacity:.18}
+
+.drag-word.matched{
+opacity:0;
+pointer-events:none;
+transform:scale(.88);
+}
+
+.drag-ghost{
+position:fixed;
+z-index:9999;
+width:220px;
+min-height:44px;
+border-radius:11px;
+border:1px solid #aebfe0;
+background:#fff;
+color:#253249;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:8px 12px;
+font-size:.9rem;
+line-height:1.15;
+font-weight:800;
+box-shadow:0 15px 35px rgba(31,41,55,.22);
+pointer-events:none;
+transform:translate(-50%,-50%) scale(1.03);
+transition:left .28s cubic-bezier(.2,.8,.2,1),
+top .28s cubic-bezier(.2,.8,.2,1),
+transform .28s ease,
+background .15s ease,
+border-color .15s ease;
+}
+
+.drag-ghost.good{
+background:var(--good-soft);
+border-color:var(--good);
+}
+
+.drag-ghost.bad{
+background:var(--bad-soft);
+border-color:var(--bad);
+}
+
+.completion{
+display:none;
+text-align:center;
+padding:34px 16px 30px;
+}
+
+.completion.show{display:block}
+
+.completion h2{
+margin:0 0 7px;
+font-size:1.7rem;
+}
+
+.completion p{
+margin:0 0 18px;
+color:var(--muted);
+}
+
+.results{
+width:min(360px,100%);
+margin:0 auto 22px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.result-box{
+padding:14px 12px;
+border-radius:14px;
+background:#f7f9fc;
+border:1px solid var(--line);
+}
+
+.result-value{
+font-size:1.55rem;
+font-weight:900;
+line-height:1;
+color:#26364f;
+}
+
+.result-label{
+margin-top:6px;
+color:var(--muted);
+font-size:.76rem;
+font-weight:750;
+}
+
+.result-box.wrong .result-value{color:var(--bad)}
+
+@media (max-width:900px){
+.game-layout{grid-template-columns:1fr}
+.answer-panel{position:static}
+.word-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media (max-width:680px){
+.app{padding-top:16px}
+.top{align-items:flex-start}
+.cards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.word-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{height:135px}
+}
+
+@media (max-width:430px){
+.cards-grid{grid-template-columns:1fr 1fr}
+.word-list{grid-template-columns:1fr 1fr}
+.board,.answer-panel{border-radius:16px}
+.board{padding:12px}
+.word{font-size:.91rem}
+.pair-word{font-size:.78rem}
+.drag-word{font-size:.79rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+*,*::before,*::after{
+animation-duration:.01ms !important;
+transition-duration:.01ms !important;
+}
+}
+</style>
 </head>
 <body>
-  <main class="app">
-    <div class="top">
-      <div>
-        <h1>Year 8 Math Vocabulary Match</h1>
-        <p class="subtitle">Drag each translation to its matching card.</p>
-      </div>
-      <button class="small-btn" id="shuffleBtn">Shuffle</button>
-    </div>
-
-    <div class="section-label">Chapter</div>
-    <div class="chapter-row" id="chapterRow"></div>
-
-    <div class="section-label">Practice direction</div>
-    <div class="mode-row" aria-label="Practice direction">
-      <button class="mode-btn active" data-mode="sv-en">Swedish cards → English words</button>
-      <button class="mode-btn" data-mode="en-sv">English cards → Swedish words</button>
-    </div>
-
-    <div class="status">
-      <span id="progressText">0 of 16 matched</span>
-      <span>Drag a word onto a card</span>
-    </div>
-
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-
-    <div class="game-layout">
-      <section class="board">
-        <div class="board-heading">
-          <strong id="cardLanguageHeading">Swedish cards</strong>
-          <span>Correct matches flip over</span>
-        </div>
-
-        <div class="cards-grid" id="cardsGrid"></div>
-
-        <div class="completion" id="completion">
-          <h2>Round complete!</h2>
-          <p id="completionMessage">You matched all 16 vocabulary words.</p>
-
-          <div class="results">
-            <div class="result-box">
-              <div class="result-value" id="matchedResult">16</div>
-              <div class="result-label">words matched</div>
-            </div>
-            <div class="result-box wrong">
-              <div class="result-value" id="wrongResult">0</div>
-              <div class="result-label">wrong attempts</div>
-            </div>
-          </div>
-
-          <button class="mode-btn active" id="playAgainBtn">Shuffle & play again</button>
-        </div>
-      </section>
-
-      <aside class="answer-panel">
-        <h2 id="answerHeading">English words</h2>
-        <p>Drag each word to the card you think it matches.</p>
-        <div class="word-list" id="wordList"></div>
-      </aside>
-    </div>
-  </main>
-
-  <script>
-    /*
-      Vocabulary is organized by chapter from the beginning so future chapters
-      can be added without rebuilding the game. Only Chapter 1 is active now.
-    */
-    const CHAPTERS = {
-      1: [
-        { sv: "avrundning", en: "rounding" },
-        { sv: "bas", en: "base" },
-        { sv: "blandad form", en: "mixed number" },
-        { sv: "bråkform", en: "fraction form" },
-        { sv: "delbarhetsregler", en: "divisibility rules" },
-        { sv: "enklaste form", en: "simplest form" },
-        { sv: "förlängning", en: "expanding a fraction" },
-        { sv: "grundpotensform", en: "scientific notation / standard form" },
-        { sv: "jämna tal", en: "even numbers" },
-        { sv: "minsta gemensamma nämnare (MGN)", en: "least common denominator (LCD)" },
-        { sv: "platsvärde", en: "place-value" },
-        { sv: "potens", en: "power" },
-        { sv: "primtal", en: "prime numbers" },
-        { sv: "tiopotens", en: "power of 10" },
-        { sv: "udda tal", en: "odd numbers" },
-        { sv: "förenkla", en: "simplify" }
-      ]
-    };
-
-    const ACTIVE_CHAPTERS = [1];
-
-    const chapterRow = document.getElementById("chapterRow");
-    const cardsGrid = document.getElementById("cardsGrid");
-    const wordList = document.getElementById("wordList");
-    const progressText = document.getElementById("progressText");
-    const progressFill = document.getElementById("progressFill");
-    const completion = document.getElementById("completion");
-    const completionMessage = document.getElementById("completionMessage");
-    const matchedResult = document.getElementById("matchedResult");
-    const wrongResult = document.getElementById("wrongResult");
-    const cardLanguageHeading = document.getElementById("cardLanguageHeading");
-    const answerHeading = document.getElementById("answerHeading");
-    const shuffleBtn = document.getElementById("shuffleBtn");
-    const playAgainBtn = document.getElementById("playAgainBtn");
-    const modeButtons = [...document.querySelectorAll(".mode-btn[data-mode]")];
-
-    let mode = "sv-en";
-    let selectedChapter = 1;
-    let roundTerms = [];
-    let matched = new Set();
-    let wrongAttempts = 0;
-    let cardOrder = [];
-    let answerOrder = [];
-    let dragState = null;
-
-    function shuffle(arr){
-      const copy=[...arr];
-      for(let i=copy.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [copy[i],copy[j]]=[copy[j],copy[i]];
-      }
-      return copy;
-    }
-
-    function buildChapterButtons(){
-      chapterRow.innerHTML = "";
-
-      ACTIVE_CHAPTERS.forEach(chapter => {
-        const btn = document.createElement("button");
-        btn.className = "chapter-btn";
-        if(selectedChapter === chapter) btn.classList.add("active");
-        btn.textContent = `Chapter ${chapter}`;
-        btn.dataset.chapter = chapter;
-        btn.addEventListener("click", () => {
-          selectedChapter = chapter;
-          buildChapterButtons();
-          newRound();
-        });
-        chapterRow.append(btn);
-      });
-
-      if(ACTIVE_CHAPTERS.length > 1){
-        const allBtn = document.createElement("button");
-        allBtn.className = "chapter-btn";
-        if(selectedChapter === "all") allBtn.classList.add("active");
-        allBtn.textContent = "All Learned";
-        allBtn.dataset.chapter = "all";
-        allBtn.addEventListener("click", () => {
-          selectedChapter = "all";
-          buildChapterButtons();
-          newRound();
-        });
-        chapterRow.append(allBtn);
-      }
-    }
-
-    function getRoundTerms(){
-      let rawTerms;
-
-      if(selectedChapter === "all"){
-        rawTerms = ACTIVE_CHAPTERS.flatMap(ch => CHAPTERS[ch]);
-      }else{
-        rawTerms = CHAPTERS[selectedChapter];
-      }
-
-      return rawTerms.map((term,index)=>({...term,id:index}));
-    }
-
-    function cardText(term){
-      return mode==="sv-en" ? term.sv : term.en;
-    }
-
-    function answerText(term){
-      return mode==="sv-en" ? term.en : term.sv;
-    }
-
-    function cardLang(){
-      return mode==="sv-en" ? "Swedish" : "English";
-    }
-
-    function answerLang(){
-      return mode==="sv-en" ? "English" : "Swedish";
-    }
-
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;");
-    }
-
-    function frontMarkup(term){
-      return `
-        <div class="lang">${cardLang()}</div>
-        <div class="word">${escapeHtml(cardText(term))}</div>
-      `;
-    }
-
-    function matchedMarkup(term){
-      return `
-        <div class="pair-wrap">
-          <div class="pair-line">
-            <div class="lang">Swedish</div>
-            <div class="pair-word">${escapeHtml(term.sv)}</div>
-          </div>
-          <div class="pair-divider"></div>
-          <div class="pair-line">
-            <div class="lang">English</div>
-            <div class="pair-word">${escapeHtml(term.en)}</div>
-          </div>
-          <div class="matched-check">✓ Matched</div>
-        </div>
-      `;
-    }
-
-    function render(){
-      cardsGrid.innerHTML="";
-      wordList.innerHTML="";
-      completion.classList.remove("show");
-      cardsGrid.style.display="grid";
-
-      cardLanguageHeading.textContent=`${cardLang()} cards`;
-      answerHeading.textContent=`${answerLang()} words`;
-
-      for(const term of cardOrder){
-        const shell=document.createElement("div");
-        shell.className="card-shell";
-
-        const card=document.createElement("div");
-        card.className="card";
-        card.dataset.id=term.id;
-        card.innerHTML=frontMarkup(term);
-
-        shell.append(card);
-        cardsGrid.append(shell);
-      }
-
-      for(const term of answerOrder){
-        const item=document.createElement("div");
-        item.className="drag-word";
-        item.dataset.id=term.id;
-        item.textContent=answerText(term);
-        item.setAttribute("role","button");
-        item.setAttribute("tabindex","0");
-        item.setAttribute("aria-label",`${answerText(term)}. Drag to matching card.`);
-        item.addEventListener("pointerdown", startDrag);
-        wordList.append(item);
-      }
-
-      updateProgress();
-    }
-
-    function updateProgress(){
-      const total = roundTerms.length;
-      const n = matched.size;
-
-      progressText.textContent=`${n} of ${total} matched`;
-      progressFill.style.width=`${(n/total)*100}%`;
-
-      if(n===total){
-        setTimeout(()=>{
-          cardsGrid.style.display="none";
-          completion.classList.add("show");
-
-          matchedResult.textContent = total;
-          wrongResult.textContent = wrongAttempts;
-
-          if(wrongAttempts === 0){
-            completionMessage.textContent = `Perfect round — all ${total} words matched with no wrong attempts.`;
-          }else if(wrongAttempts === 1){
-            completionMessage.textContent = `You matched all ${total} vocabulary words with 1 wrong attempt.`;
-          }else{
-            completionMessage.textContent = `You matched all ${total} vocabulary words with ${wrongAttempts} wrong attempts.`;
-          }
-        },850);
-      }
-    }
-
-    function clearHover(){
-      document.querySelectorAll(".card.drop-hover")
-        .forEach(c=>c.classList.remove("drop-hover"));
-    }
-
-    function getCardAt(x,y){
-      const el=document.elementFromPoint(x,y);
-      return el ? el.closest(".card") : null;
-    }
-
-    function startDrag(e){
-      if(e.button!==undefined && e.button!==0) return;
-
-      const item=e.currentTarget;
-      if(item.classList.contains("matched")) return;
-
-      e.preventDefault();
-
-      const rect=item.getBoundingClientRect();
-      const ghost=document.createElement("div");
-      ghost.className="drag-ghost";
-      ghost.textContent=item.textContent;
-      ghost.style.left=`${e.clientX}px`;
-      ghost.style.top=`${e.clientY}px`;
-      document.body.append(ghost);
-
-      item.classList.add("dragging");
-
-      dragState={
-        item,
-        id:Number(item.dataset.id),
-        ghost,
-        homeX:rect.left+rect.width/2,
-        homeY:rect.top+rect.height/2,
-        pointerId:e.pointerId
-      };
-
-      try{item.setPointerCapture(e.pointerId)}catch(_){}
-
-      item.addEventListener("pointermove", moveDrag);
-      item.addEventListener("pointerup", endDrag);
-      item.addEventListener("pointercancel", cancelDrag);
-    }
-
-    function moveDrag(e){
-      if(!dragState) return;
-
-      dragState.ghost.style.left=`${e.clientX}px`;
-      dragState.ghost.style.top=`${e.clientY}px`;
-
-      clearHover();
-      const card=getCardAt(e.clientX,e.clientY);
-
-      if(card && !card.classList.contains("matched-card")){
-        card.classList.add("drop-hover");
-      }
-    }
-
-    function endDrag(e){
-      if(!dragState) return;
-
-      const state=dragState;
-      clearHover();
-
-      const card=getCardAt(e.clientX,e.clientY);
-      cleanupPointerListeners(state.item);
-
-      if(card && !card.classList.contains("matched-card")){
-        const cardId=Number(card.dataset.id);
-
-        if(cardId===state.id){
-          correctDrop(state,card);
-        }else{
-          wrongDrop(state,card);
-        }
-      }else{
-        returnHome(state);
-      }
-    }
-
-    function cancelDrag(){
-      if(!dragState) return;
-      const state=dragState;
-      clearHover();
-      cleanupPointerListeners(state.item);
-      returnHome(state);
-    }
-
-    function cleanupPointerListeners(item){
-      item.removeEventListener("pointermove",moveDrag);
-      item.removeEventListener("pointerup",endDrag);
-      item.removeEventListener("pointercancel",cancelDrag);
-    }
-
-    async function flipCardToMatched(card, term){
-      try{
-        const close = card.animate(
-          [
-            { transform:"rotateY(0deg)" },
-            { transform:"rotateY(88deg)" }
-          ],
-          {
-            duration:235,
-            easing:"cubic-bezier(.25,.46,.45,.94)",
-            fill:"forwards"
-          }
-        );
-
-        await close.finished;
-
-        card.innerHTML=matchedMarkup(term);
-        card.classList.add("matched-card");
-
-        const open = card.animate(
-          [
-            { transform:"rotateY(-88deg)" },
-            { transform:"rotateY(0deg)" }
-          ],
-          {
-            duration:270,
-            easing:"cubic-bezier(.25,.46,.45,.94)",
-            fill:"forwards"
-          }
-        );
-
-        await open.finished;
-      }catch(_){
-        card.innerHTML=matchedMarkup(term);
-        card.classList.add("matched-card");
-        card.style.transform="rotateY(0deg)";
-      }
-    }
-
-    function correctDrop(state,card){
-      dragState=null;
-
-      const r=card.getBoundingClientRect();
-      state.ghost.classList.add("good");
-      state.ghost.style.left=`${r.left+r.width/2}px`;
-      state.ghost.style.top=`${r.top+r.height/2}px`;
-      state.ghost.style.transform="translate(-50%,-50%) scale(.90)";
-
-      card.classList.add("correct-flash");
-
-      setTimeout(async ()=>{
-        state.ghost.remove();
-        state.item.classList.remove("dragging");
-        state.item.classList.add("matched");
-
-        const term=roundTerms.find(t=>t.id===state.id);
-        await flipCardToMatched(card,term);
-
-        matched.add(state.id);
-        card.classList.remove("correct-flash");
-        updateProgress();
-      },250);
-    }
-
-    function wrongDrop(state,card){
-      dragState=null;
-      wrongAttempts++;
-
-      state.ghost.classList.add("bad");
-      card.classList.add("wrong-flash");
-
-      setTimeout(()=>{
-        card.classList.remove("wrong-flash");
-        state.ghost.style.left=`${state.homeX}px`;
-        state.ghost.style.top=`${state.homeY}px`;
-        state.ghost.style.transform="translate(-50%,-50%) scale(1)";
-      },120);
-
-      setTimeout(()=>{
-        state.ghost.remove();
-        state.item.classList.remove("dragging");
-      },430);
-    }
-
-    function returnHome(state){
-      dragState=null;
-
-      state.ghost.style.left=`${state.homeX}px`;
-      state.ghost.style.top=`${state.homeY}px`;
-      state.ghost.style.transform="translate(-50%,-50%) scale(1)";
-
-      setTimeout(()=>{
-        state.ghost.remove();
-        state.item.classList.remove("dragging");
-      },300);
-    }
-
-    function newRound(){
-      if(dragState){
-        try{dragState.ghost.remove()}catch(_){}
-        dragState=null;
-      }
-
-      roundTerms = getRoundTerms();
-      matched = new Set();
-      wrongAttempts = 0;
-      cardOrder = shuffle(roundTerms);
-      answerOrder = shuffle(roundTerms);
-      render();
-    }
-
-    shuffleBtn.addEventListener("click",newRound);
-    playAgainBtn.addEventListener("click",newRound);
-
-    modeButtons.forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        mode=btn.dataset.mode;
-        modeButtons.forEach(b=>b.classList.toggle("active",b===btn));
-        newRound();
-      });
-    });
-
-    buildChapterButtons();
-    newRound();
-  </script>
+<main class="app">
+<div class="top">
+<div>
+<h1>Year 8 Math Vocabulary Match</h1>
+<p class="subtitle">Drag each translation to its matching card.</p>
+</div>
+<button class="small-btn" id="shuffleBtn">Shuffle</button>
+</div>
+
+<div class="section-label">Chapter</div>
+<div class="chapter-row" id="chapterRow"></div>
+
+<div class="section-label">Practice direction</div>
+<div class="mode-row" aria-label="Practice direction">
+<button class="mode-btn active" data-mode="sv-en">Swedish cards → English words</button>
+<button class="mode-btn" data-mode="en-sv">English cards → Swedish words</button>
+</div>
+
+<div class="status">
+<span id="progressText">0 of 17 matched</span>
+<span>Drag a word onto a card</span>
+</div>
+
+<div class="progress-track">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+
+<div class="game-layout">
+<section class="board">
+<div class="board-heading">
+<strong id="cardLanguageHeading">Swedish cards</strong>
+<span>Correct matches flip over</span>
+</div>
+
+<div class="cards-grid" id="cardsGrid"></div>
+
+<div class="completion" id="completion">
+<h2>Round complete!</h2>
+<p id="completionMessage">You matched all 17 vocabulary words.</p>
+
+<div class="results">
+<div class="result-box">
+<div class="result-value" id="matchedResult">17</div>
+<div class="result-label">words matched</div>
+</div>
+<div class="result-box wrong">
+<div class="result-value" id="wrongResult">0</div>
+<div class="result-label">wrong attempts</div>
+</div>
+</div>
+
+<button class="mode-btn active" id="playAgainBtn">Shuffle & play again</button>
+</div>
+</section>
+
+<aside class="answer-panel">
+<h2 id="answerHeading">English words</h2>
+<p>Drag each word to the card you think it matches.</p>
+<div class="word-list" id="wordList"></div>
+</aside>
+</div>
+</main>
+
+<script>
+/*
+Vocabulary is organized by chapter from the beginning so future chapters
+can be added without rebuilding the game. Only Chapter 1 is active now.
+*/
+const CHAPTERS = {
+1: [
+{ sv: "avrundning", en: "rounding" },
+{ sv: "bas", en: "base" },
+{ sv: "blandad form", en: "mixed number" },
+{ sv: "bråkform", en: "fraction form" },
+{ sv: "delbarhetsregler", en: "divisibility rules" },
+{ sv: "enklaste form", en: "simplest form" },
+{ sv: "förlängning", en: "expanding a fraction" },
+{ sv: "grundpotensform", en: "scientific notation / standard form" },
+{ sv: "jämna tal", en: "even numbers" },
+{ sv: "minsta gemensamma nämnare (MGN)", en: "least common denominator (LCD)" },
+{ sv: "position", en: "place name" },
+        { sv: "platsvärde", en: "place value" },
+{ sv: "potens", en: "power" },
+{ sv: "primtal", en: "prime numbers" },
+{ sv: "tiopotens", en: "power of 10" },
+{ sv: "udda tal", en: "odd numbers" },
+{ sv: "förenkla", en: "simplify" }
+]
+};
+
+const ACTIVE_CHAPTERS = [1];
+
+const chapterRow = document.getElementById("chapterRow");
+const cardsGrid = document.getElementById("cardsGrid");
+const wordList = document.getElementById("wordList");
+const progressText = document.getElementById("progressText");
+const progressFill = document.getElementById("progressFill");
+const completion = document.getElementById("completion");
+const completionMessage = document.getElementById("completionMessage");
+const matchedResult = document.getElementById("matchedResult");
+const wrongResult = document.getElementById("wrongResult");
+const cardLanguageHeading = document.getElementById("cardLanguageHeading");
+const answerHeading = document.getElementById("answerHeading");
+const shuffleBtn = document.getElementById("shuffleBtn");
+const playAgainBtn = document.getElementById("playAgainBtn");
+const modeButtons = [...document.querySelectorAll(".mode-btn[data-mode]")];
+
+let mode = "sv-en";
+let selectedChapter = 1;
+let roundTerms = [];
+let matched = new Set();
+let wrongAttempts = 0;
+let cardOrder = [];
+let answerOrder = [];
+let dragState = null;
+
+function shuffle(arr){
+const copy=[...arr];
+for(let i=copy.length-1;i>0;i--){
+const j=Math.floor(Math.random()*(i+1));
+[copy[i],copy[j]]=[copy[j],copy[i]];
+}
+return copy;
+}
+
+function buildChapterButtons(){
+chapterRow.innerHTML = "";
+
+ACTIVE_CHAPTERS.forEach(chapter => {
+const btn = document.createElement("button");
+btn.className = "chapter-btn";
+if(selectedChapter === chapter) btn.classList.add("active");
+btn.textContent = `Chapter ${chapter}`;
+btn.dataset.chapter = chapter;
+btn.addEventListener("click", () => {
+selectedChapter = chapter;
+buildChapterButtons();
+newRound();
+});
+chapterRow.append(btn);
+});
+
+if(ACTIVE_CHAPTERS.length > 1){
+const allBtn = document.createElement("button");
+allBtn.className = "chapter-btn";
+if(selectedChapter === "all") allBtn.classList.add("active");
+allBtn.textContent = "All Learned";
+allBtn.dataset.chapter = "all";
+allBtn.addEventListener("click", () => {
+selectedChapter = "all";
+buildChapterButtons();
+newRound();
+});
+chapterRow.append(allBtn);
+}
+}
+
+function getRoundTerms(){
+let rawTerms;
+
+if(selectedChapter === "all"){
+rawTerms = ACTIVE_CHAPTERS.flatMap(ch => CHAPTERS[ch]);
+}else{
+rawTerms = CHAPTERS[selectedChapter];
+}
+
+return rawTerms.map((term,index)=>({...term,id:index}));
+}
+
+function cardText(term){
+return mode==="sv-en" ? term.sv : term.en;
+}
+
+function answerText(term){
+return mode==="sv-en" ? term.en : term.sv;
+}
+
+function cardLang(){
+return mode==="sv-en" ? "Swedish" : "English";
+}
+
+function answerLang(){
+return mode==="sv-en" ? "English" : "Swedish";
+}
+
+function escapeHtml(str){
+return String(str)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;");
+}
+
+function frontMarkup(term){
+return `
+<div class="lang">${cardLang()}</div>
+<div class="word">${escapeHtml(cardText(term))}</div>
+`;
+}
+
+function matchedMarkup(term){
+return `
+<div class="pair-wrap">
+<div class="pair-line">
+<div class="lang">Swedish</div>
+<div class="pair-word">${escapeHtml(term.sv)}</div>
+</div>
+<div class="pair-divider"></div>
+<div class="pair-line">
+<div class="lang">English</div>
+<div class="pair-word">${escapeHtml(term.en)}</div>
+</div>
+<div class="matched-check">✓ Matched</div>
+</div>
+`;
+}
+
+function render(){
+cardsGrid.innerHTML="";
+wordList.innerHTML="";
+completion.classList.remove("show");
+cardsGrid.style.display="grid";
+
+cardLanguageHeading.textContent=`${cardLang()} cards`;
+answerHeading.textContent=`${answerLang()} words`;
+
+for(const term of cardOrder){
+const shell=document.createElement("div");
+shell.className="card-shell";
+
+const card=document.createElement("div");
+card.className="card";
+card.dataset.id=term.id;
+card.innerHTML=frontMarkup(term);
+
+shell.append(card);
+cardsGrid.append(shell);
+}
+
+for(const term of answerOrder){
+const item=document.createElement("div");
+item.className="drag-word";
+item.dataset.id=term.id;
+item.textContent=answerText(term);
+item.setAttribute("role","button");
+item.setAttribute("tabindex","0");
+item.setAttribute("aria-label",`${answerText(term)}. Drag to matching card.`);
+item.addEventListener("pointerdown", startDrag);
+wordList.append(item);
+}
+
+updateProgress();
+}
+
+function updateProgress(){
+const total = roundTerms.length;
+const n = matched.size;
+
+progressText.textContent=`${n} of ${total} matched`;
+progressFill.style.width=`${(n/total)*100}%`;
+
+if(n===total){
+setTimeout(()=>{
+cardsGrid.style.display="none";
+completion.classList.add("show");
+
+matchedResult.textContent = total;
+wrongResult.textContent = wrongAttempts;
+
+if(wrongAttempts === 0){
+completionMessage.textContent = `Perfect round — all ${total} words matched with no wrong attempts.`;
+}else if(wrongAttempts === 1){
+completionMessage.textContent = `You matched all ${total} vocabulary words with 1 wrong attempt.`;
+}else{
+completionMessage.textContent = `You matched all ${total} vocabulary words with ${wrongAttempts} wrong attempts.`;
+}
+},850);
+}
+}
+
+function clearHover(){
+document.querySelectorAll(".card.drop-hover")
+.forEach(c=>c.classList.remove("drop-hover"));
+}
+
+function getCardAt(x,y){
+const el=document.elementFromPoint(x,y);
+return el ? el.closest(".card") : null;
+}
+
+function startDrag(e){
+if(e.button!==undefined && e.button!==0) return;
+
+const item=e.currentTarget;
+if(item.classList.contains("matched")) return;
+
+e.preventDefault();
+
+const rect=item.getBoundingClientRect();
+const ghost=document.createElement("div");
+ghost.className="drag-ghost";
+ghost.textContent=item.textContent;
+ghost.style.left=`${e.clientX}px`;
+ghost.style.top=`${e.clientY}px`;
+document.body.append(ghost);
+
+item.classList.add("dragging");
+
+dragState={
+item,
+id:Number(item.dataset.id),
+ghost,
+homeX:rect.left+rect.width/2,
+homeY:rect.top+rect.height/2,
+pointerId:e.pointerId
+};
+
+try{item.setPointerCapture(e.pointerId)}catch(_){}
+
+item.addEventListener("pointermove", moveDrag);
+item.addEventListener("pointerup", endDrag);
+item.addEventListener("pointercancel", cancelDrag);
+}
+
+function moveDrag(e){
+if(!dragState) return;
+
+dragState.ghost.style.left=`${e.clientX}px`;
+dragState.ghost.style.top=`${e.clientY}px`;
+
+clearHover();
+const card=getCardAt(e.clientX,e.clientY);
+
+if(card && !card.classList.contains("matched-card")){
+card.classList.add("drop-hover");
+}
+}
+
+function endDrag(e){
+if(!dragState) return;
+
+const state=dragState;
+clearHover();
+
+const card=getCardAt(e.clientX,e.clientY);
+cleanupPointerListeners(state.item);
+
+if(card && !card.classList.contains("matched-card")){
+const cardId=Number(card.dataset.id);
+
+if(cardId===state.id){
+correctDrop(state,card);
+}else{
+wrongDrop(state,card);
+}
+}else{
+returnHome(state);
+}
+}
+
+function cancelDrag(){
+if(!dragState) return;
+const state=dragState;
+clearHover();
+cleanupPointerListeners(state.item);
+returnHome(state);
+}
+
+function cleanupPointerListeners(item){
+item.removeEventListener("pointermove",moveDrag);
+item.removeEventListener("pointerup",endDrag);
+item.removeEventListener("pointercancel",cancelDrag);
+}
+
+async function flipCardToMatched(card, term){
+try{
+const close = card.animate(
+[
+{ transform:"rotateY(0deg)" },
+{ transform:"rotateY(88deg)" }
+],
+{
+duration:235,
+easing:"cubic-bezier(.25,.46,.45,.94)",
+fill:"forwards"
+}
+);
+
+await close.finished;
+
+card.innerHTML=matchedMarkup(term);
+card.classList.add("matched-card");
+
+const open = card.animate(
+[
+{ transform:"rotateY(-88deg)" },
+{ transform:"rotateY(0deg)" }
+],
+{
+duration:270,
+easing:"cubic-bezier(.25,.46,.45,.94)",
+fill:"forwards"
+}
+);
+
+await open.finished;
+}catch(_){
+card.innerHTML=matchedMarkup(term);
+card.classList.add("matched-card");
+card.style.transform="rotateY(0deg)";
+}
+}
+
+function correctDrop(state,card){
+dragState=null;
+
+const r=card.getBoundingClientRect();
+state.ghost.classList.add("good");
+state.ghost.style.left=`${r.left+r.width/2}px`;
+state.ghost.style.top=`${r.top+r.height/2}px`;
+state.ghost.style.transform="translate(-50%,-50%) scale(.90)";
+
+card.classList.add("correct-flash");
+
+setTimeout(async ()=>{
+state.ghost.remove();
+state.item.classList.remove("dragging");
+state.item.classList.add("matched");
+
+const term=roundTerms.find(t=>t.id===state.id);
+await flipCardToMatched(card,term);
+
+matched.add(state.id);
+card.classList.remove("correct-flash");
+updateProgress();
+},250);
+}
+
+function wrongDrop(state,card){
+dragState=null;
+wrongAttempts++;
+
+state.ghost.classList.add("bad");
+card.classList.add("wrong-flash");
+
+setTimeout(()=>{
+card.classList.remove("wrong-flash");
+state.ghost.style.left=`${state.homeX}px`;
+state.ghost.style.top=`${state.homeY}px`;
+state.ghost.style.transform="translate(-50%,-50%) scale(1)";
+},120);
+
+setTimeout(()=>{
+state.ghost.remove();
+state.item.classList.remove("dragging");
+},430);
+}
+
+function returnHome(state){
+dragState=null;
+
+state.ghost.style.left=`${state.homeX}px`;
+state.ghost.style.top=`${state.homeY}px`;
+state.ghost.style.transform="translate(-50%,-50%) scale(1)";
+
+setTimeout(()=>{
+state.ghost.remove();
+state.item.classList.remove("dragging");
+},300);
+}
+
+function newRound(){
+if(dragState){
+try{dragState.ghost.remove()}catch(_){}
+dragState=null;
+}
+
+roundTerms = getRoundTerms();
+matched = new Set();
+wrongAttempts = 0;
+cardOrder = shuffle(roundTerms);
+answerOrder = shuffle(roundTerms);
+render();
+}
+
+shuffleBtn.addEventListener("click",newRound);
+playAgainBtn.addEventListener("click",newRound);
+
+modeButtons.forEach(btn=>{
+btn.addEventListener("click",()=>{
+mode=btn.dataset.mode;
+modeButtons.forEach(b=>b.classList.toggle("active",b===btn));
+newRound();
+});
+});
+
+buildChapterButtons();
+newRound();
+</script>
 </body>
 </html>
