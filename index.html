@@ -116,6 +116,110 @@ border:1px solid var(--line);
 
 .small-btn:hover{background:#f8fafc}
 
+.top-actions{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+justify-content:flex-end;
+}
+
+.study-overlay{
+position:fixed;
+inset:0;
+z-index:10000;
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+background:rgba(15,23,42,.48);
+backdrop-filter:blur(3px);
+}
+
+.study-overlay.show{display:flex}
+
+.study-box{
+width:min(760px,96vw);
+max-height:min(82vh,760px);
+display:flex;
+flex-direction:column;
+overflow:hidden;
+background:#fff;
+border:1px solid var(--line);
+border-radius:20px;
+box-shadow:0 24px 70px rgba(15,23,42,.28);
+}
+
+.study-header{
+display:flex;
+align-items:flex-start;
+justify-content:space-between;
+gap:18px;
+padding:18px 20px 15px;
+border-bottom:1px solid var(--line);
+}
+
+.study-header h2{
+margin:0;
+font-size:1.25rem;
+}
+
+.study-header p{
+margin:5px 0 0;
+color:var(--muted);
+font-size:.86rem;
+line-height:1.4;
+}
+
+.study-list{
+overflow:auto;
+padding:14px 20px 20px;
+}
+
+.study-columns,
+.study-row{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:18px;
+align-items:center;
+}
+
+.study-columns{
+position:sticky;
+top:0;
+z-index:1;
+padding:8px 12px;
+margin-bottom:4px;
+background:#eef4ff;
+border:1px solid #d9e5fb;
+border-radius:10px;
+font-size:.74rem;
+font-weight:850;
+letter-spacing:.06em;
+text-transform:uppercase;
+color:#3b557e;
+}
+
+.study-row{
+padding:10px 12px;
+border-bottom:1px solid #edf1f6;
+font-size:.94rem;
+line-height:1.25;
+}
+
+.study-row:last-child{border-bottom:0}
+
+.study-sv{font-weight:800;color:#23334d}
+.study-en{color:#42526a}
+
+@media (max-width:520px){
+.study-overlay{padding:10px}
+.study-box{max-height:90vh}
+.study-header{padding:15px}
+.study-list{padding:10px 15px 15px}
+.study-columns,.study-row{gap:10px}
+.study-row{font-size:.84rem;padding:9px 8px}
+}
+
 .status{
 display:flex;
 justify-content:space-between;
@@ -473,7 +577,10 @@ transition-duration:.01ms !important;
 <h1>Year 8 Math Vocabulary Match</h1>
 <p class="subtitle">Drag each translation to its matching card.</p>
 </div>
-<button class="small-btn" id="shuffleBtn">Shuffle</button>
+<div class="top-actions">
+<button class="small-btn" id="studyListBtn" type="button">Study List</button>
+<button class="small-btn" id="shuffleBtn" type="button">Shuffle</button>
+</div>
 </div>
 
 <div class="section-label">Chapter</div>
@@ -530,6 +637,25 @@ transition-duration:.01ms !important;
 </div>
 </main>
 
+<div class="study-overlay" id="studyOverlay" aria-hidden="true">
+<div class="study-box" role="dialog" aria-modal="true" aria-labelledby="studyTitle">
+<div class="study-header">
+<div>
+<h2 id="studyTitle">Study List</h2>
+<p>Review the Swedish and English words, then close the list when you are ready to practice.</p>
+</div>
+<button class="small-btn" id="closeStudyBtn" type="button">Close</button>
+</div>
+<div class="study-list">
+<div class="study-columns">
+<div>Swedish</div>
+<div>English</div>
+</div>
+<div id="studyRows"></div>
+</div>
+</div>
+</div>
+
 <script>
 /*
 Vocabulary is organized by chapter from the beginning so future chapters
@@ -571,6 +697,10 @@ const wrongResult = document.getElementById("wrongResult");
 const cardLanguageHeading = document.getElementById("cardLanguageHeading");
 const answerHeading = document.getElementById("answerHeading");
 const shuffleBtn = document.getElementById("shuffleBtn");
+const studyListBtn = document.getElementById("studyListBtn");
+const studyOverlay = document.getElementById("studyOverlay");
+const studyRows = document.getElementById("studyRows");
+const closeStudyBtn = document.getElementById("closeStudyBtn");
 const playAgainBtn = document.getElementById("playAgainBtn");
 const modeButtons = [...document.querySelectorAll(".mode-btn[data-mode]")];
 
@@ -938,6 +1068,35 @@ state.item.classList.remove("dragging");
 },300);
 }
 
+function getStudyTerms(){
+if(selectedChapter === "all"){
+return ACTIVE_CHAPTERS.flatMap(ch => CHAPTERS[ch]);
+}
+return CHAPTERS[selectedChapter];
+}
+
+function openStudyList(){
+const terms = getStudyTerms();
+studyRows.innerHTML = terms.map(term => `
+<div class="study-row">
+<div class="study-sv">${escapeHtml(term.sv)}</div>
+<div class="study-en">${escapeHtml(term.en)}</div>
+</div>
+`).join("");
+
+studyOverlay.classList.add("show");
+studyOverlay.setAttribute("aria-hidden","false");
+document.body.style.overflow="hidden";
+closeStudyBtn.focus();
+}
+
+function closeStudyList(){
+studyOverlay.classList.remove("show");
+studyOverlay.setAttribute("aria-hidden","true");
+document.body.style.overflow="";
+studyListBtn.focus();
+}
+
 function newRound(){
 if(dragState){
 try{dragState.ghost.remove()}catch(_){}
@@ -953,6 +1112,16 @@ render();
 }
 
 shuffleBtn.addEventListener("click",newRound);
+studyListBtn.addEventListener("click",openStudyList);
+closeStudyBtn.addEventListener("click",closeStudyList);
+studyOverlay.addEventListener("click",e=>{
+if(e.target===studyOverlay) closeStudyList();
+});
+document.addEventListener("keydown",e=>{
+if(e.key==="Escape" && studyOverlay.classList.contains("show")){
+closeStudyList();
+}
+});
 playAgainBtn.addEventListener("click",newRound);
 
 modeButtons.forEach(btn=>{
