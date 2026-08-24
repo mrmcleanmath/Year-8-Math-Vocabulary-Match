@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -971,6 +972,39 @@ item.removeEventListener("pointerup",endDrag);
 item.removeEventListener("pointercancel",cancelDrag);
 }
 
+function compactWordList(item){
+const remaining=[...wordList.querySelectorAll(".drag-word")].filter(el=>el!==item);
+const before=new Map(remaining.map(el=>[el,el.getBoundingClientRect()]));
+
+item.remove();
+
+if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+requestAnimationFrame(()=>{
+remaining.forEach(el=>{
+if(!el.isConnected) return;
+
+const first=before.get(el);
+const last=el.getBoundingClientRect();
+const dx=first.left-last.left;
+const dy=first.top-last.top;
+
+if(Math.abs(dx)<0.5 && Math.abs(dy)<0.5) return;
+
+el.animate(
+[
+{ transform:`translate(${dx}px, ${dy}px)` },
+{ transform:"translate(0, 0)" }
+],
+{
+duration:260,
+easing:"cubic-bezier(.2,.8,.2,1)"
+}
+);
+});
+});
+}
+
 async function flipCardToMatched(card, term){
 try{
 const close = card.animate(
@@ -1024,7 +1058,7 @@ card.classList.add("correct-flash");
 setTimeout(async ()=>{
 state.ghost.remove();
 state.item.classList.remove("dragging");
-state.item.classList.add("matched");
+compactWordList(state.item);
 
 const term=roundTerms.find(t=>t.id===state.id);
 await flipCardToMatched(card,term);
